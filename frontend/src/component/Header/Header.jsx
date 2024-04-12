@@ -1,25 +1,20 @@
 import React from "react";
 
 import { Link,NavLink } from "react-router-dom";
-
- 
+import { useState } from "react";
 
  
 
   
 export default function Header() {
+
+  const [toggleDropdown, setToggleDropdown] = useState(false);
+
   return (
     <header className="shadow sticky z-50 top-0">
       <nav className="space-x-4 fixed top-0 left-0 w-full h-16 bg-black bg-opacity-80 backdrop-blur-md flex items-center justify-center z-10">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-          {/* <Link to="/" className="flex items-center">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjC7KzVskTMEHAGoPJC81z-S1dl55k0CjUMQ&usqp=CAU"
-              className="mr-3 h-12"
-              alt="Logo"
-            />
-          </Link> */}
-      
+         
           <div
             className="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"
             id="mobile-menu-2"
@@ -57,6 +52,7 @@ export default function Header() {
         </div>
       </nav>
     </header>
+   
 
   );
 }

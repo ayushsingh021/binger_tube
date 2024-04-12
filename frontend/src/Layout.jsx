@@ -7,7 +7,10 @@ import { Outlet } from 'react-router-dom'
 function Layout() {
   return (
 
-     <div className="h-screen">
+     <div className="">
+      <div className=''>
+          <div className='gradient' />
+        </div>
          <Header/>
       
       <Outlet/>
