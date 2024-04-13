@@ -1,13 +1,13 @@
 
 import './App.css'
-import { Button } from "@/components/ui/button"
+import Header from './component/Header/Header'
+// import { Button } from "@/components/ui/button"
 function App() {
  
 
   return (
-    <>
-        <Button>Click</Button>
-    </>
+    <Header/>
+  
   )
 }
 
