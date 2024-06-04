@@ -5,25 +5,47 @@ import axios from "axios";
 
 function Scroller({videoInfo}) {
  
+
   async function onClickHandler(videoLink) {
     try {
-      const response = await axios.get(
-        "http://localhost:8000/api/download_single_video/",
-        {
-          params: {
-            link: videoLink,
-          },
-        }
-      );
+        // Make a GET request to download the single video
+        const response = await axios.get(
+            "http://localhost:8000/api/download_video/",
+            {
+                params: {
+                    link: videoLink,
+                    
+                },
+                responseType: 'blob' // Ensure response is treated as a blob
+            }
+        );
 
-      console.log("Clicked video link:", videoLink);
-      console.log(response)
-      // Perform any other actions with the videoLink, such as downloading or navigating to it
+        // Extract the filename from the content disposition header
+        console.log(response.headers)
+        const disposition = response.headers['content-disposition'];
+        console.log(disposition)
+        const filename = disposition ? disposition.split('filename=')[1].replace(/"/g, '') : 'video.mp4';
+
+        // Create a temporary link element for downloading the video file
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const linkElement = document.createElement('a');
+        linkElement.href = url;
+        linkElement.setAttribute('download', filename);
+
+        // Append the link to the document body
+        document.body.appendChild(linkElement);
+
+        // Trigger a click event on the link to start the download
+        linkElement.click();
+
+        // Remove the link from the document body after the download starts
+        document.body.removeChild(linkElement);
+
+        console.log("Clicked video link:", videoLink);
     } catch (error) {
-      console.error("Error:", error);
+        console.error("Error:", error);
     }
-  }
-
+}
  
   return (
     <div>

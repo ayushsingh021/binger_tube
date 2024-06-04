@@ -1,9 +1,11 @@
 import React from 'react'
 import { PinContainer } from '@/components/ui/3d-pin';
+import avatar from "../../assets/avatar.jpg";
 
 function NameCard() {
     return (
         <div className="h-[30rem] mb-20 pb-10 flex items-center justify-center z-10 lg:z-10 ">
+          <a  href="https://ayushpersonalsite-fawn.vercel.app">
           <PinContainer
             title="ayushpersonalsite"
             href="https://ayushpersonalsite-fawn.vercel.app"
@@ -15,12 +17,15 @@ function NameCard() {
               </h3>
               <div className="text-base !m-0 !p-0 font-normal">
                 <span className="text-slate-500 ">
-                 Ayush Singh | A Pre-Final Year Student at NIT Kurukshetra
+                 Ayush Singh | A Pre-Final Year Student at NIT Kurukshetra &#128522;
                 </span>
               </div>
-              <div className=" flex flex-1 w-full rounded-lg mt-4 bg-gradient-to-r from-blue-200 to-cyan-200" />
+              {/* <div className=" flex flex-1 w-full rounded-lg mt-4 bg-gradient-to-r from-blue-200 to-cyan-200" /> */}
+              <img className=' flex flex-1 w-full rounded-lg mt-4' src={avatar} alt="" />
             </div>
           </PinContainer>
+          </a>
+         
         </div>
       );
 }

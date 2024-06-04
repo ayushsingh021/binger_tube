@@ -1,13 +1,19 @@
 from typing import List
-from fastapi import FastAPI,HTTPException, File, UploadFile
+from fastapi import FastAPI,HTTPException, File, Response, UploadFile, requests
 from scraperplaylist import get_video_links;
 from fastapi.middleware.cors import CORSMiddleware
 from playlist_downloader import download_complete_playlist
-from playlist_downloader import single_video_downloader
+
+from playlist_downloader import download_all_videos
+from playlist_downloader import download_video
 from pydantic import BaseModel
 from typing import List
 
 
+from fastapi import FastAPI, HTTPException
+from pytube import YouTube
+from starlette.responses import StreamingResponse
+import io
 
 
 
@@ -23,24 +29,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class PlaylistRequest(BaseModel):
     links: List[str]
-    
+
+#scraps and get the video information   
 @app.get("/api/get-videos/")
 async def get_videos(url: str):
     video_info = get_video_links(url)
     return {"video_info": video_info}
 
+#downloads complete playlist videos
 @app.post("/api/download_playlist/")
 async def download_playlist(request: PlaylistRequest):
     links = request.links
-    download_complete_playlist(links)
+    await download_complete_playlist(links)
+    return {"status": "Download started"}
 
-@app.get("/api/download_single_video/")
-async def download_single_video(link:str):
-    single_video_downloader(link)
+#single video downloading
+@app.get("/api/download_video/")
+async def download_video_endpoint(link: str ):
+    return await download_video(link)
+
+
+@app.get("/api/download-all/")
+async def download_on_chrome():
+    return await download_all_videos();
 
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str = None):
     return {"item_id": item_id, "q": q}
+
