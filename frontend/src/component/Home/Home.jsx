@@ -1,19 +1,15 @@
 import React, { useState } from "react";
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Boxes } from "@/components/ui/background-boxes";
 import { Progress } from "@/components/ui/progress";
-
-import { cn } from "@/lib/utils";
 import NameCard from "../NameCard/NameCard";
 import Scroller from "../Scroller/Scroller";
 import axios from "axios";
-import swal from "sweetalert";
 import Loader from "../Loader/Loader";
-import { TypeAnimation } from "react-type-animation";
+import { ToastContainer,toast } from "react-toastify";
+
+
+
 
 export default function Home() {
   const [link, setLink] = useState({
@@ -21,16 +17,9 @@ export default function Home() {
   });
 
   const [progress, setProgress] = useState(5);
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => setProgress(66), 500)
-  //   return () => clearTimeout(timer)
-  // }, [])
-
   const [videoData, setVideoData] = useState([]);
   const [refresh, setRefresh] = useState(false);
 
-  // const {videoLink , src , title} = videoData;
 
   const { linkVal } = link;
 
@@ -56,95 +45,97 @@ export default function Home() {
       // console.log(response.data.video_info)
       setVideoData(response.data.video_info);
       setRefresh(false);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error.message);
+
+      
+      setRefresh(false);
+      toast.error(error.message);
+    }
   }
 
   let videoLinks = [];
   for (let i = 0; i < videoData.length; i++) {
     videoLinks.push(videoData[i].videoLink);
   }
-  console.log(videoLinks);
+  // console.log(videoLinks);
 
-  const [download , setDownload] = useState(false);
- 
 
-async function onClickHandler() {
-  try {
-      // Make a POST request to download the files locally
-      const response = await axios.post(
-          "http://localhost:8000/api/download_playlist/",
-          {
-              links: videoLinks,
-          }
-      );
-      console.log(response)
-      // Check if the files were downloaded successfully
-      if (response.status === 200) {
-          for (const link of videoLinks) {
-              const videoResponse = await axios.get(`http://localhost:8000/api/download_video/`, {
-                  params: { URL: link },
-                  responseType: 'blob' // Ensure response is treated as a blob
-              });
+  //main project work
+  async function onClickHandler() {
+    setRefresh(true);
+          try {
+            // Make a POST request to download the videos and get a ZIP file
+            const response = await axios.post("http://localhost:8000/api/download_playlist/", {
+                links: videoLinks,
+            }, {
+                responseType: 'blob' // Ensure the response is treated as a blob
+            });
 
-              const fileSize = videoResponse.headers['content-length'] || 0;
+            // Create a temporary link element for downloading the ZIP file
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'videos.zip');
 
-              // Estimate network speed
-              const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-              const networkSpeed = connection ? connection.downlink * 1024 * 1024 : 1000000; // Default to 1 Mbps if network speed is not available
+            // Append the link to the document body
+            document.body.appendChild(link);
 
-              // Calculate download time
-              const downloadTime = fileSize / networkSpeed;
+            // Trigger a click event on the link to start the download
+            link.click();
 
-              console.log("Estimated download time:", downloadTime.toFixed(2), "seconds");
+            // Remove the link from the document body after the download
+            link.parentNode.removeChild(link);
 
-              // Create a temporary link element for downloading the video file
-              const url = window.URL.createObjectURL(new Blob([videoResponse.data]));
-              const linkElement = document.createElement('a');
-              linkElement.href = url;
-
-              // Extract the filename from the content disposition header
-              const disposition = videoResponse.headers['content-disposition'];
-              const filename = disposition ? disposition.split('filename=')[1].replace(/"/g, '') : 'video.mp4';
-
-              linkElement.setAttribute('download', filename);
-
-              // Append the link to the document body
-              document.body.appendChild(linkElement);
-
-              // Trigger a click event on the link to start the download
-              linkElement.click();
-
-              // Remove the link from the document body after the download
-              document.body.removeChild(linkElement);
-          }
-
-          // Optionally, update the UI or set a flag to indicate that the download is complete
-          setDownload(true);
-      } else {
-          // Handle error if the files were not downloaded successfully
-          console.error("Failed to download files");
-      }
-  } catch (error) {
-      console.error("Error downloading files:", error);
+            // Optionally, update the UI or set a flag to indicate that the download is complete
+            // console.log("Download started");
+            setRefresh(false);
+            toast.success("Download Started");
+            
+        } catch (error) {
+            setRefresh(false);
+            toast.error(error.message);
+            
+            console.error("Error downloading videos:", error);
+        }
   }
-}
 
+  //personal use
+  // async function onClickHandler() {
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:8000/api/download_playlist_local/",
+  //       {
+  //         links: videoLinks,
+  //       }
+  //     );
+  //     const timer = setTimeout(() => setProgress(10), 1000);
 
-  console.log(videoData);
+  //     console.log(response.data);
+  //     setProgress(100);
+  //     return () => clearTimeout(timer);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
+  // console.log(videoData);
 
   if (refresh) {
     <Loader />;
   }
 
+
   return (
-    <div className="h-full relative z-10 w-full overflow-hidden bg-slate-900 flex flex-col items-center justify-center rounded-lg">
+    
+    <section >
+        <div className="h-full relative z-10 w-full overflow-hidden bg-slate-900 flex flex-col items-center justify-center rounded-lg">
       {refresh && <Loader className="" />}
+      
       <div className="absolute inset-0 w-full h-full bg-slate-900  [mask-image:radial-gradient(transparent,white)] pointer-events-none" />
 
       <div className="lg:flex justify-between lg:space-x-20 top-20 items-center relative p-4">
         <NameCard />
-
         <div className="flex flex-col items-center ">
           <div className="relative w-full z-10 max-w-xl sm:mt-1 text-center sm:text-right justify-center items-center">
             <form
@@ -166,7 +157,8 @@ async function onClickHandler() {
               </Button>
             </form>
           </div>
-           {/* <Boxes /> */}
+          {/* <Boxes /> */}
+          
 
           <aside className="text-black rounded-lg sm:py-5 ">
             <div className=" justify-center sm:py-24">
@@ -204,14 +196,15 @@ async function onClickHandler() {
             </div>
           </aside>
         </div>
+        
       </div>
-
+    
       {videoData.length !== 0 && (
         <div className="h-full relative z-10 w-full overflow-hidden bg-slate-900 flex flex-col items-center justify-center rounded-lg">
           <Button
             type="submit"
             variant="outline"
-            className="text-black mb-5"
+            className="text-black mb-5 hover:bg-green-400"
             onClick={onClickHandler}
           >
             Download All Videos
@@ -224,8 +217,13 @@ async function onClickHandler() {
           <Scroller videoInfo={videoData} />
         </div>
       )}
+     
 
       {/* </div> */}
-    </div>
+        </div>
+        
+    </section>
+    
+  
   );
 }

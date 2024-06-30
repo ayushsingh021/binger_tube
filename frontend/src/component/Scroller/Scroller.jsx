@@ -2,11 +2,17 @@ import React from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import Loader from "../Loader/Loader";
+import { useState } from "react";
+import { toast } from "react-toastify";
+
 
 function Scroller({videoInfo}) {
+  const [refresh, setRefresh] = useState(false);
  
 
   async function onClickHandler(videoLink) {
+    setRefresh(true);
     try {
         // Make a GET request to download the single video
         const response = await axios.get(
@@ -16,14 +22,14 @@ function Scroller({videoInfo}) {
                     link: videoLink,
                     
                 },
-                responseType: 'blob' // Ensure response is treated as a blob
+                responseType: 'blob' // response is treated as a blob
             }
         );
 
         // Extract the filename from the content disposition header
-        console.log(response.headers)
+        // console.log(response.headers)
         const disposition = response.headers['content-disposition'];
-        console.log(disposition)
+        // console.log(disposition)
         const filename = disposition ? disposition.split('filename=')[1].replace(/"/g, '') : 'video.mp4';
 
         // Create a temporary link element for downloading the video file
@@ -41,14 +47,21 @@ function Scroller({videoInfo}) {
         // Remove the link from the document body after the download starts
         document.body.removeChild(linkElement);
 
-        console.log("Clicked video link:", videoLink);
+        // console.log("Clicked video link:", videoLink);
+        setRefresh(false);
+        toast.success("Download Started")
     } catch (error) {
+      setRefresh(false);
+        toast.error(error.message);
         console.error("Error:", error);
     }
 }
- 
+if (refresh) {
+  <Loader />;
+}
   return (
     <div>
+      {refresh && <Loader className="" />}
       <ScrollArea className="h-96 rounded-md border mb-10 ">
         <div className="flex flex-col justify-center items-center space-y-1">
         {videoInfo.map((item) => (

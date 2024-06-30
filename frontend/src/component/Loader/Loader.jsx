@@ -1,14 +1,9 @@
 import React from "react";
 import loader from "../../assets/loader.svg";
+
 export default function Loader() {
   return (
-    <div
-      className="z-20 lg:z-20 bg-gray-500 bg-opacity-50 flex items-center justify-center fixed
-    left-0 right-0 bottom-0 top-0 "
-    >
-      {/* <div>
-            <img src={loader} alt="Loading.." className="h-24 bg-transparent"/>
-        </div> */}
+    <div className="z-20 bg-gray-500 bg-opacity-50 flex items-center justify-center fixed left-0 right-0 bottom-0 top-0">
       <div className="w-40 h-40">
         <svg
           version="1.1"
@@ -71,6 +66,7 @@ export default function Loader() {
             />
           </line>
         </svg>
+        <p className="text-white text-center uppercase">This may take some time</p>
       </div>
     </div>
   );
