@@ -17,10 +17,14 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins: [react()],
-  resolve:{
-    alias:{
-      screens: '/src/screens',
-      components: '/src/components',
-    }
-  }
+  resolve: {
+    alias: {
+      '@': '/vercel/path0/frontend/src',
+    },
+  },
+  build: {
+    rollupOptions: {
+      external: ['@/components/ui/button'], // Add any external modules here
+    },
+  },
 });
