@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Progress } from "../../components/ui/progress";
-import NameCard from "../NameCard/NameCard";
-import Scroller from "../Scroller/Scroller";
+import { Button } from "../../components/ui/button.jsx";
+import { Input } from "../../components/ui/input.jsx";
+import { Progress } from "../../components/ui/progress.jsx";
+import NameCard from "../NameCard/NameCard.jsx";
+import Scroller from "../Scroller/Scroller.jsx";
 import axios from "axios";
-import Loader from "../Loader/Loader";
+import Loader from "../Loader/Loader.jsx";
 import { ToastContainer,toast } from "react-toastify";
 
 

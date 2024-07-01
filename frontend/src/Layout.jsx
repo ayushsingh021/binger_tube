@@ -1,6 +1,6 @@
 import React from 'react'
-import Header from './component/Header/Header'
-import Footer from './component/Footer/Footer'
+import Header from './component/Header/Header.jsx'
+import Footer from './component/Footer/Footer.jsx'
 import { Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';

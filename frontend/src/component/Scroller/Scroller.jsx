@@ -1,8 +1,8 @@
 import React from "react";
-import { ScrollArea, ScrollBar } from "../../components/ui/scroll-area";
-import { Button } from "../../components/ui/button";
+import { ScrollArea, ScrollBar } from "../../components/ui/scroll-area.jsx";
+import { Button } from "../../components/ui/button.jsx";
 import axios from "axios";
-import Loader from "../Loader/Loader";
+import Loader from "../Loader/Loader.jsx";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
