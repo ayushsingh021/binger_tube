@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 
 
 function Scroller({videoInfo}) {
+  const API_URL = import.meta.env.VITE_FASTAPI_ENDPOINT
   const [refresh, setRefresh] = useState(false);
  
 
