@@ -1,6 +1,6 @@
 import React from "react";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "../../components/ui/scroll-area";
+import { Button } from "../../components/ui/button";
 import axios from "axios";
 import Loader from "../Loader/Loader";
 import { useState } from "react";

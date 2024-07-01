@@ -1,5 +1,5 @@
 import React from 'react'
-import { PinContainer } from '@/components/ui/3d-pin';
+import { PinContainer } from '../../components/ui/3d-pin';
 import avatar from "../../assets/binge_tube_logo.jpg";
 
 
