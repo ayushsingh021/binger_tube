@@ -19,7 +19,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': '/vercel/path0/frontend/src',
+      '@': '/frontend/src',
     },
   },
   build: {
