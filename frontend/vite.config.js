@@ -13,6 +13,9 @@ export default defineConfig({
   //     "/api": "https://bingetube-backend.vercel.app/",
   //   },
   // },
+  build: {
+    sourcemap: true,
+  },
   plugins: [react()],
   resolve: {
     alias: {
