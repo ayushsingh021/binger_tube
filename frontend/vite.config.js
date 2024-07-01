@@ -17,9 +17,10 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
+  resolve:{
+    alias:{
+      screens: '/src/screens',
+      components: '/src/components',
+    }
+  }
 });
