@@ -12,6 +12,9 @@ import { ToastContainer,toast } from "react-toastify";
 
 
 export default function Home() {
+  
+  // console.log(import.meta.env.VITE_FASTAPI_ENDPOINT);
+  const API_URL = import.meta.env.VITE_FASTAPI_ENDPOINT
   const [link, setLink] = useState({
     linkVal: "",
   });
@@ -35,7 +38,7 @@ export default function Home() {
     setRefresh(true);
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/get-videos/",
+      `${API_URL}/api/get-videos/`,
         {
           params: {
             url: linkVal,
@@ -66,7 +69,7 @@ export default function Home() {
     setRefresh(true);
           try {
             // Make a POST request to download the videos and get a ZIP file
-            const response = await axios.post("http://localhost:8000/api/download_playlist/", {
+            const response = await axios.post(`${API_URL}/api/download_playlist/`, {
                 links: videoLinks,
             }, {
                 responseType: 'blob' // Ensure the response is treated as a blob
@@ -137,7 +140,7 @@ export default function Home() {
       <div className="lg:flex justify-between lg:space-x-20 top-20 items-center relative p-4">
         <NameCard />
         <div className="flex flex-col items-center ">
-          <div className="relative w-full z-10 max-w-xl sm:mt-1 text-center sm:text-right justify-center items-center">
+          <div className="relative w-full z-10 max-w-xl sm:mt-1 sm:text-right justify-center ">
             <form
               onSubmit={onSubmit}
               className="flex max-w-sm space-x-2 text-white"
@@ -152,7 +155,7 @@ export default function Home() {
                 onChange={onChange}
                 required
               />
-              <Button type="submit" variant="outline" className="text-black">
+              <Button type="submit" variant="outline" className="text-black hover:bg-green-400">
                 Submit
               </Button>
             </form>

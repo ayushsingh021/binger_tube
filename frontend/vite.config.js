@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   // server: {
   //   proxy: {
-  //     "/api": "http://localhost:8000",
+  //     "/api": "https://bingetube-backend.vercel.app/",
   //   },
   // },
   plugins: [react()],

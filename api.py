@@ -103,7 +103,7 @@ async def download_playlist_local(request: PlaylistRequest):
     links = request.links
     download_complete_playlist_local(links)
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/api/test")
+async def test():
+        return "The testing is successful"
 

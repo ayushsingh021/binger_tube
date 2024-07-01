@@ -16,7 +16,7 @@ function Scroller({videoInfo}) {
     try {
         // Make a GET request to download the single video
         const response = await axios.get(
-            "http://localhost:8000/api/download_video/",
+            `${API_URL}/api/download_video/`,
             {
                 params: {
                     link: videoLink,
