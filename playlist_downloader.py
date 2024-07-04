@@ -45,7 +45,38 @@ async def download_video(URL: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error downloading video from {URL}: {e}")
 
+# Single Video Downloader function
 
+# Single Video Downloader function
+# async def download_video(URL: str):
+#     try:
+#         # Fetch the YouTube video
+#         yt = YouTube(URL)
+#         stream = yt.streams.get_highest_resolution()
+
+#         # Create a generator to stream the video content
+#         def video_stream():
+#             buffer = BytesIO()
+#             stream.stream_to_buffer(buffer)
+#             buffer.seek(0)  # Reset buffer position to the beginning
+#             while True:
+#                 chunk = buffer.read(8192)
+#                 if not chunk:
+#                     break
+#                 yield chunk
+
+#         # Properly encode the filename to handle special characters
+#         filename = f"{yt.title}.mp4"
+#         encoded_filename = urllib.parse.quote(filename)
+
+#         # Return the stream as a streaming response
+#         return StreamingResponse(
+#             video_stream(),
+#             media_type='video/mp4',
+#             headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"}
+#         )
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error downloading video from {URL}: {e}")
 
 #Personal use
 # Function to download a single video

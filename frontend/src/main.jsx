@@ -19,7 +19,10 @@ const router = createBrowserRouter(
     <Route path="/" element={<Layout />}>
       <Route path="" element={<Home />} />
     </Route>
-  )
+  ),
+  {
+    basename: '/binger_tube' // replace 'your-basename' with your actual base URL
+  }
 );
 
 ReactDOM.createRoot(document.getElementById('root')).render(

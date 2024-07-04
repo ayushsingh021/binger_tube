@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import FastAPI,HTTPException
+from fastapi import FastAPI,HTTPException, Query
 from scraperplaylist import get_video_links;
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from typing import List
 
 
-
+from urllib.parse import unquote
 from pytube import YouTube
 from starlette.responses import StreamingResponse
 
@@ -62,10 +62,35 @@ def download_video_to_buffer(URL: str) -> BytesIO:
     return buffer, yt.title
 
 #downloads complete playlist videos
-@app.post("/api/download_playlist/")
-async def download_playlist(request: VideoLinksRequest):
+# @app.get("/api/download_playlist/")
+# async def download_playlist(urls: List[str] = Query(...)):
+#     try:
+#         video_links = [unquote(url) for url in urls]
+#         zip_buffer = BytesIO()
+
+#         # Create a ZIP file in memory
+#         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+#             for URL in video_links:
+#                 buffer, title = download_video_to_buffer(URL)
+#                 filename = f"{title}.mp4"
+#                 encoded_filename = urllib.parse.quote(filename)
+#                 zipf.writestr(encoded_filename, buffer.getvalue())
+
+#         zip_buffer.seek(0)  # Reset buffer position to the beginning
+
+#         # Return the ZIP file as a streaming response
+#         return StreamingResponse(
+            
+#             zip_buffer,
+#             media_type="application/zip",
+#             headers={"Content-Disposition": "attachment; filename=videos.zip"}
+#         )
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error downloading videos: {e}")
+@app.get("/api/download_playlist/")
+async def download_playlist(urls: List[str] = Query(...)):
     try:
-        video_links = request.links
+        video_links = [unquote(url) for url in urls]
         zip_buffer = BytesIO()
 
         # Create a ZIP file in memory
@@ -80,7 +105,6 @@ async def download_playlist(request: VideoLinksRequest):
 
         # Return the ZIP file as a streaming response
         return StreamingResponse(
-            
             zip_buffer,
             media_type="application/zip",
             headers={"Content-Disposition": "attachment; filename=videos.zip"}

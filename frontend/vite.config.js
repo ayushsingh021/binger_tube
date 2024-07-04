@@ -22,6 +22,7 @@ export default defineConfig({
       '@': '/frontend/src',
     },
   },
+  base: "/binger_tube",
   build: {
     rollupOptions: {
       external: ['@/components/ui/button'], // Add any external modules here

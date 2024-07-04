@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { Button } from "../../components/ui/button.jsx";
 import { Input } from "../../components/ui/input.jsx";
+
 import { Progress } from "../../components/ui/progress.jsx";
 import NameCard from "../NameCard/NameCard.jsx";
 import Scroller from "../Scroller/Scroller.jsx";
@@ -67,41 +68,43 @@ export default function Home() {
 
   //main project work
   async function onClickHandler() {
-    setRefresh(true);
-          try {
-            // Make a POST request to download the videos and get a ZIP file
-            const response = await axios.post(`${API_URL}/api/download_playlist/`, {
-                links: videoLinks,
-            }, {
-                responseType: 'blob' // Ensure the response is treated as a blob
-            });
+    // setRefresh(true);
+    //       try {
+    //         // Make a POST request to download the videos and get a ZIP file
+    //         const response = await axios.post(`${API_URL}/api/download_playlist/`, {
+    //             links: videoLinks,
+    //         }, {
+    //             responseType: 'blob' // Ensure the response is treated as a blob
+    //         });
 
-            // Create a temporary link element for downloading the ZIP file
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'videos.zip');
+    //         // Create a temporary link element for downloading the ZIP file
+    //         const url = window.URL.createObjectURL(new Blob([response.data]));
+    //         const link = document.createElement('a');
+    //         link.href = url;
+    //         link.setAttribute('download', 'videos.zip');
 
-            // Append the link to the document body
-            document.body.appendChild(link);
+    //         // Append the link to the document body
+    //         document.body.appendChild(link);
 
-            // Trigger a click event on the link to start the download
-            link.click();
+    //         // Trigger a click event on the link to start the download
+    //         link.click();
 
-            // Remove the link from the document body after the download
-            link.parentNode.removeChild(link);
+    //         // Remove the link from the document body after the download
+    //         link.parentNode.removeChild(link);
 
-            // Optionally, update the UI or set a flag to indicate that the download is complete
-            // console.log("Download started");
-            setRefresh(false);
-            toast.success("Download Started");
+    //         // Optionally, update the UI or set a flag to indicate that the download is complete
+    //         // console.log("Download started");
+    //         setRefresh(false);
+    //         toast.success("Download Started");
             
-        } catch (error) {
-            setRefresh(false);
-            toast.error(error.message);
+    //     } catch (error) {
+    //         setRefresh(false);
+    //         toast.error(error.message);
             
-            console.error("Error downloading videos:", error);
-        }
+    //         console.error("Error downloading videos:", error);
+    //     }
+    const encodedURLs = videoLinks.map(encodeURIComponent).join(',');
+    window.location.href = `${API_URL}/api/download_playlist/?urls=${encodedURLs}`;
   }
 
   //personal use

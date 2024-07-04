@@ -5,7 +5,7 @@ import axios from "axios";
 import Loader from "../Loader/Loader.jsx";
 import { useState } from "react";
 import { toast } from "react-toastify";
-
+import avatar from "../../assets/binge_tube_logo.jpg";
 
 function Scroller({videoInfo}) {
   const API_URL = import.meta.env.VITE_FASTAPI_ENDPOINT
@@ -13,49 +13,50 @@ function Scroller({videoInfo}) {
  
 
   async function onClickHandler(videoLink) {
-    setRefresh(true);
-    try {
-        // Make a GET request to download the single video
-        const response = await axios.get(
-            `${API_URL}/api/download_video/`,
-            {
-                params: {
-                    link: videoLink,
+    // setRefresh(true);
+    // try {
+    //     // Make a GET request to download the single video
+    //     const response = await axios.get(
+    //         `${API_URL}/api/download_video/`,
+    //         {
+    //             params: {
+    //                 link: videoLink,
                     
-                },
-                responseType: 'blob' // response is treated as a blob
-            }
-        );
+    //             },
+    //             responseType: 'blob' // response is treated as a blob
+    //         }
+    //     );
 
-        // Extract the filename from the content disposition header
-        // console.log(response.headers)
-        const disposition = response.headers['content-disposition'];
-        // console.log(disposition)
-        const filename = disposition ? disposition.split('filename=')[1].replace(/"/g, '') : 'video.mp4';
+    //     // Extract the filename from the content disposition header
+    //     // console.log(response.headers)
+    //     const disposition = response.headers['content-disposition'];
+    //     // console.log(disposition)
+    //     const filename = disposition ? disposition.split('filename=')[1].replace(/"/g, '') : 'video.mp4';
 
-        // Create a temporary link element for downloading the video file
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const linkElement = document.createElement('a');
-        linkElement.href = url;
-        linkElement.setAttribute('download', filename);
+    //     // Create a temporary link element for downloading the video file
+    //     const url = window.URL.createObjectURL(new Blob([response.data]));
+    //     const linkElement = document.createElement('a');
+    //     linkElement.href = url;
+    //     linkElement.setAttribute('download', filename);
 
-        // Append the link to the document body
-        document.body.appendChild(linkElement);
+    //     // Append the link to the document body
+    //     document.body.appendChild(linkElement);
 
-        // Trigger a click event on the link to start the download
-        linkElement.click();
+    //     // Trigger a click event on the link to start the download
+    //     linkElement.click();
 
-        // Remove the link from the document body after the download starts
-        document.body.removeChild(linkElement);
+    //     // Remove the link from the document body after the download starts
+    //     document.body.removeChild(linkElement);
 
-        // console.log("Clicked video link:", videoLink);
-        setRefresh(false);
-        toast.success("Download Started")
-    } catch (error) {
-      setRefresh(false);
-        toast.error(error.message);
-        console.error("Error:", error);
-    }
+    //     // console.log("Clicked video link:", videoLink);
+    //     setRefresh(false);
+    //     toast.success("Download Started")
+    // } catch (error) {
+    //   setRefresh(false);
+    //     toast.error(error.message);
+    //     console.error("Error:", error);
+    // }
+    window.location.href = `${API_URL}/api/download_video/?link=${videoLink}`;
 }
 if (refresh) {
   <Loader />;
@@ -71,7 +72,7 @@ if (refresh) {
                 <div>
                   <img
                     className="object-cover p-1 rounded-lg w-full rounded-t-lg h-auto md:w-48 md:rounded-none md:rounded-s-lg"
-                    src={item.src == null ? "https://images.pexels.com/photos/1001990/pexels-photo-1001990.jpeg?auto=compress&cs=tinysrgb&w=800":item.src}
+                    src={item.src == null ? `${avatar}` :item.src}
                     alt=""
                   />
                 </div>
