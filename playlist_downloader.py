@@ -1,102 +1,80 @@
-
-from fastapi import HTTPException, Query
+from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
-from pytube import YouTube
-import os
+from pytubefix import YouTube , Playlist
 import urllib.parse
-
-
 from io import BytesIO
+from starlette.responses import StreamingResponse
+from zipfile import ZipFile
+import re
 
 
 
 
-async def download_complete_playlist(links: list[str] = Query(...)):
-    for link in links:
-        if link:
-            await download_video(link)
-        else:
-            print("Invalid link provided")
-    return {"status": "Download completed"}
-
-
-#Single Video Downlaoder function
-async def download_video(URL: str):
+async def download_playlist(link:str):
     try:
-        # Fetch the YouTube video
-        yt = YouTube(URL)
-        stream = yt.streams.get_highest_resolution()
+        playlist = Playlist(link)
+        if not playlist.video_urls:
+            raise HTTPException(status_code=400, detail="No videos found in playlist")
 
-        # Stream the video content into a buffer
-        buffer = BytesIO()
-        stream.stream_to_buffer(buffer)
-        buffer.seek(0)  # Reset buffer position to the beginning
+        zip_buffer = BytesIO()
+        with ZipFile(zip_buffer, "w") as zip_file:
+            for url in playlist.video_urls:
+                try:
+                    yt = YouTube(url)
+                    stream = yt.streams.get_highest_resolution()
 
-        # Properly encode the filename to handle special characters
-        filename = f"{yt.title}.mp4"
-        encoded_filename = urllib.parse.quote(filename)
+                    video_buffer = BytesIO()
+                    stream.stream_to_buffer(video_buffer)
+                    video_buffer.seek(0)
 
-        # Return the buffer content as a streaming response
+                    # Sanitize filename
+                    filename = re.sub(r'[\\/*?:"<>|]', "_", yt.title) + ".mp4"
+
+                    # Write to zip
+                    zip_file.writestr(filename, video_buffer.read())
+                    print(f"Added: {filename}")
+
+                except Exception as e:
+                    print(f"Skipping video due to error: {e}")
+
+        zip_buffer.seek(0)
+        zip_filename = "youtube_playlist.zip"
+        encoded_filename = urllib.parse.quote(zip_filename)
+
         return StreamingResponse(
-            buffer,
-            media_type='video/mp4',
-            headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"}
+            zip_buffer,
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"
+            }
         )
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error downloading video from {URL}: {e}")
+        raise HTTPException(status_code=500, detail=f"Download error: {str(e)}")
 
-# Single Video Downloader function
-
-# Single Video Downloader function
-# async def download_video(URL: str):
-#     try:
-#         # Fetch the YouTube video
-#         yt = YouTube(URL)
-#         stream = yt.streams.get_highest_resolution()
-
-#         # Create a generator to stream the video content
-#         def video_stream():
-#             buffer = BytesIO()
-#             stream.stream_to_buffer(buffer)
-#             buffer.seek(0)  # Reset buffer position to the beginning
-#             while True:
-#                 chunk = buffer.read(8192)
-#                 if not chunk:
-#                     break
-#                 yield chunk
-
-#         # Properly encode the filename to handle special characters
-#         filename = f"{yt.title}.mp4"
-#         encoded_filename = urllib.parse.quote(filename)
-
-#         # Return the stream as a streaming response
-#         return StreamingResponse(
-#             video_stream(),
-#             media_type='video/mp4',
-#             headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"}
-#         )
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Error downloading video from {URL}: {e}")
-
-#Personal use
-# Function to download a single video
-def download_video_local(link, save_path):
+# working single video downlaoder function with updated pytubefix    
+async def download_video(link: str):
     try:
         yt = YouTube(link)
         stream = yt.streams.get_highest_resolution()
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-        stream.download(output_path=save_path)
-        print(f"Downloaded: {yt.title}")
-    except Exception as e:
-        print(f"Error downloading {link}: {e}")
 
-# Function to download complete playlist
-def download_complete_playlist_local(links):
-    home_directory = os.path.expanduser("~")
-    save_path = os.path.join(home_directory, "Downloads", "bingetube_videos")
-    for link in links:
-        if link:
-            download_video_local(link, save_path)
-        else:
-            print("Invalid link provided")
+        # Stream video to in-memory buffer
+        buffer = BytesIO()
+        stream.stream_to_buffer(buffer)
+        buffer.seek(0)
+
+        # Sanitize and encode filename
+        filename = re.sub(r'[\\/*?:"<>|]', "_", yt.title) + ".mp4"
+        encoded_filename = urllib.parse.quote(filename)
+
+        # Stream the buffer with correct headers
+        return StreamingResponse(
+            buffer,
+            media_type="video/mp4",
+            headers={
+                "Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"
+            }
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Download error: {str(e)}")

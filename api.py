@@ -1,30 +1,16 @@
 from typing import List
-from fastapi import FastAPI,HTTPException, Query
+from fastapi import FastAPI
 from scraperplaylist import get_video_links;
 from fastapi.middleware.cors import CORSMiddleware
-
-
 # from playlist_downloader import download_all_videos
 from playlist_downloader import download_video
-
-#personal use
-from playlist_downloader import download_complete_playlist_local 
+from playlist_downloader import download_playlist
 
 from pydantic import BaseModel
 from typing import List
-
-
-from urllib.parse import unquote
-from pytube import YouTube
-from starlette.responses import StreamingResponse
-
-
-from fastapi.responses import StreamingResponse
-from pytube import YouTube
-from io import BytesIO
-import zipfile
+from fastapi import FastAPI
 from pydantic import BaseModel
-import urllib.parse
+
 
 
 app = FastAPI()
@@ -45,78 +31,46 @@ class PlaylistRequest(BaseModel):
 
 class VideoLinksRequest(BaseModel):
     links: list[str]
-#scraps and get the video information   
+
+#scraps and get the video information  -- OK  
 @app.get("/api/get-videos/")
 async def get_videos(url: str):
     video_info = get_video_links(url)
     return {"video_info": video_info}
 
-#helper functions for complete playlist downloader
-def download_video_to_buffer(URL: str) -> BytesIO:
-    """Downloads a YouTube video to a buffer and returns the buffer."""
-    yt = YouTube(URL)
-    stream = yt.streams.get_highest_resolution()
-    buffer = BytesIO()
-    stream.stream_to_buffer(buffer)
-    buffer.seek(0)  # Reset buffer position to the beginning
-    return buffer, yt.title
 
-#downloads complete playlist videos
-# @app.get("/api/download_playlist/")
-# async def download_playlist(urls: List[str] = Query(...)):
-#     try:
-#         video_links = [unquote(url) for url in urls]
-#         zip_buffer = BytesIO()
-
-#         # Create a ZIP file in memory
-#         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
-#             for URL in video_links:
-#                 buffer, title = download_video_to_buffer(URL)
-#                 filename = f"{title}.mp4"
-#                 encoded_filename = urllib.parse.quote(filename)
-#                 zipf.writestr(encoded_filename, buffer.getvalue())
-
-#         zip_buffer.seek(0)  # Reset buffer position to the beginning
-
-#         # Return the ZIP file as a streaming response
-#         return StreamingResponse(
-            
-#             zip_buffer,
-#             media_type="application/zip",
-#             headers={"Content-Disposition": "attachment; filename=videos.zip"}
-#         )
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Error downloading videos: {e}")
+# downlaod complete Playlist -- ok
 @app.get("/api/download_playlist/")
-async def download_playlist(urls: List[str] = Query(...)):
-    try:
-        video_links = [unquote(url) for url in urls]
-        zip_buffer = BytesIO()
-
-        # Create a ZIP file in memory
-        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
-            for URL in video_links:
-                buffer, title = download_video_to_buffer(URL)
-                filename = f"{title}.mp4"
-                encoded_filename = urllib.parse.quote(filename)
-                zipf.writestr(encoded_filename, buffer.getvalue())
-
-        zip_buffer.seek(0)  # Reset buffer position to the beginning
-
-        # Return the ZIP file as a streaming response
-        return StreamingResponse(
-            zip_buffer,
-            media_type="application/zip",
-            headers={"Content-Disposition": "attachment; filename=videos.zip"}
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error downloading videos: {e}")
+async def download_youtube_playlist(link: str):
+    return await download_playlist(link)
 
 
-#single video downloading
+#single video downloading --working
 @app.get("/api/download_video/")
-async def download_video_endpoint(link: str ):
+async def download_youtube_video(link: str):
     return await download_video(link)
+
+
+
+
+# TestCode
+# from pytubefix import YouTube
+# @app.get("/api/download_playlist_test/")
+# async def Download(link: str):
+#     try:
+#         yt = YouTube(link)
+#         stream = yt.streams.get_highest_resolution()
+#         print(f"Downloading: {yt.title}")
+
+#         stream.download()
+#         print("Download completed successfully")
+
+#     except Exception as e:
+#         print(f"An error occurred: {e}") 
+    
+
+
+
 
 
 

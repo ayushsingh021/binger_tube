@@ -10,9 +10,7 @@ function Layout() {
   return (
 
      <section className="home-section">
-      <div className=''>
-          <div className='gradient' />
-      </div>
+      
       <Header/>
       <Outlet/>
       <Footer/>
